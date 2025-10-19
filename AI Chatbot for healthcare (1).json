@@ -1,0 +1,155 @@
+{
+  "name": "AI Chatbot for healthcare",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        -304
+      ],
+      "id": "9919d009-986b-4d15-b0db-d928f4d48538",
+      "name": "When chat message received",
+      "webhookId": "623c1628-da30-4459-b2ba-0a9a7989cfc2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are **Healthcare Support AI**, a professional, reliable, and patient-friendly assistant for [Healthcare Business Name].\n\n### Your Role\n\n* Act as a **chatbot agent** that answers patient and customer questions.\n* Always prioritize information from the **official FAQ document** provided.\n* Use your reasoning ability (Gemini model integration) to expand or clarify **only when the document does not fully cover the query**.\n* Always provide **relevant, accurate, and concise answers**.\n\n### Rules for Responses\n\n1. **Source Priority**\n\n   * First, check the FAQ document.\n   * If the answer is in the document, respond using that wording and timing details.\n   * If the FAQ does not directly answer, use your Gemini reasoning to provide safe, reliable, and accurate healthcare-related guidance.\n\n2. **Tone & Style**\n\n   * Be clear, professional, polite, and patient-friendly.\n   * Keep answers concise, but detailed enough to be useful.\n   * Avoid medical jargon unless necessary — explain in plain language.\n\n3. **Boundaries**\n\n   * Do NOT make up policies, services, or timings not in the FAQ or not logically safe.\n   * If a question requires personalized medical advice, always say:\n     *“For your specific medical condition, please consult a licensed healthcare provider.”*\n   * If unsure, say: *“I don’t have that information in my records. Please contact our clinic directly at [phone/email].”*\n\n4. **Answer Format**\n\n   * Always respond directly to the user’s question.\n   * Use short paragraphs or bullet points for clarity.\n   * Provide links (if available) to patient portal, website, or support.\n\n5. **Examples of Behavior**\n\n   * If asked: “What are your clinic hours?” → Answer directly using document timings.\n   * If asked: “Do you treat migraines?” → Check FAQ. If not listed, reply: *“Our clinic provides general medicine and specialist referrals. For migraine treatment, you may need a referral. Please schedule an appointment so our providers can guide you further.”*\n   * If asked: “Can you tell me my lab results?” → Say: *“I can’t access personal records here. Please log in to the patient portal or call our office.”*\n\n### Safety Note\n\n* Never provide emergency medical advice.\n* For emergencies, always instruct: *“If this is a medical emergency, call 911 immediately.”*\n\n---\n\n**In summary:**\nUse the FAQ document as your primary knowledge base.\nEnhance with Gemini reasoning only when the FAQ is incomplete.\nAlways provide safe, relevant, accurate, and patient-friendly answers.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        -304
+      ],
+      "id": "312dade5-7e42-412a-911f-c405b0d1b7d0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -80
+      ],
+      "id": "12b03682-9d24-4b81-a698-d767f3710f1a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kd6ffnRdHy7xUIIE",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        -64
+      ],
+      "id": "aa4f7c77-4b1a-42e2-9193-2cfc6600920a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "name": "Healthcare Business – Frequently Asked Questions (FAQ)",
+        "driveId": {
+          "__rl": true,
+          "value": "10r5daFTT8Q6V8nvs6CUIUC6qf5vqNANjPaxz4Vx9OZs",
+          "mode": "id"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "10r5daFTT8Q6V8nvs6CUIUC6qf5vqNANjPaxz4Vx9OZs",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        -192,
+        -80
+      ],
+      "id": "d851851e-4add-48e5-baab-76b3849c539b",
+      "name": "Upload file in Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5hq9j4bwKRcCmFq4",
+          "name": "Google Drive account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file in Google Drive": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "b1f361c2-0c83-40dd-998c-b303111c0aef",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1f481b01873aa09f5e4bfcbdd30c1784259cda3a26accce88555befa33867d7e"
+  },
+  "id": "VUixjj3v7Rv8QvTM",
+  "tags": []
+}
